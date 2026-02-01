@@ -6,34 +6,212 @@
 <title>Just One Question 💖</title>
 
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        height: 100vh;
-        background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: 'Poppins', sans-serif;
-        overflow: hidden;
-    }
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#ffdde1,#ee9ca7);
+    font-family:'Poppins',sans-serif;
+    overflow:hidden;
+}
 
-    .container {
-        text-align: center;
-        background: rgba(255,255,255,0.9);
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-        z-index: 2;
-    }
+.card{
+    background:white;
+    padding:30px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    z-index:2;
+}
 
-    h1 {
-        color: #e91e63;
-        margin-bottom: 20px;
-    }
+h1{ color:#e91e63; }
 
-    button {
-        padding: 12px 25px;
+button{
+    padding:12px 28px;
+    font-size:16px;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+    margin:10px;
+    transition:all 0.3s ease;
+}
+
+#yes{
+    background:#e91e63;
+    color:white;
+    transform:scale(1);
+}
+
+#no{
+    background:#ddd;
+    position:absolute;
+}
+
+/* Popups */
+.popup{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.4);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    pointer-events:none;
+    transition:0.4s;
+    z-index:5;
+}
+
+.popup.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+.popup-box{
+    background:white;
+    padding:30px;
+    border-radius:25px;
+    text-align:center;
+    animation:pop 0.5s ease;
+}
+
+@keyframes pop{
+    from{transform:scale(0.7);opacity:0}
+    to{transform:scale(1);opacity:1}
+}
+
+/* Falling hearts & roses */
+.fall{
+    position:fixed;
+    top:-20px;
+    animation:fall linear forwards;
+}
+
+@keyframes fall{
+    to{transform:translateY(110vh) rotate(360deg);opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Will you be my Valentine? 💕</h1>
+    <button id="yes" onclick="yesClicked()">Yes 🥰</button>
+    <button id="no" onmouseover="moveNo()">No 😅</button>
+</div>
+
+<!-- Popup 1 -->
+<div class="popup" id="popup1">
+    <div class="popup-box">
+        <h2>🎉🎉🎊🎊</h2>
+        <p>You made my heart so happy ❤️</p>
+    </div>
+</div>
+
+<!-- Popup 2 -->
+<div class="popup" id="popup2">
+    <div class="popup-box">
+        <p><b>One more thing please… 🙈</b></p>
+        <button onclick="showDatePopup()">Okay 😍</button>
+    </div>
+</div>
+
+<!-- Popup 3 -->
+<div class="popup" id="popup3">
+    <div class="popup-box">
+        <p><b>Can we go on vodka date? 🥰🥰</b></p>
+        <input type="date" id="datePick">
+        <br><br>
+        <button onclick="confirmDate()">Confirm Date 💖</button>
+    </div>
+</div>
+
+<audio id="music" loop>
+    <source src="https://cdn.pixabay.com/audio/2022/10/25/audio_0c8f2c6e5c.mp3">
+</audio>
+
+<script>
+let yesScale = 1;
+let noIndex = 0;
+
+const noTexts = [
+    "No 😅",
+    "Are you sure? 🤨",
+    "Think again 😏",
+    "Really? 😳",
+    "Last chance 🥺",
+    "Don’t break my heart 💔",
+    "Okay… stop 😭",
+    "Just click YES 😤",
+    "You’re stubborn 😅",
+    "YES is better 😍"
+];
+
+function moveNo(){
+    const no=document.getElementById("no");
+    const yes=document.getElementById("yes");
+
+    // Move button
+    no.style.left = Math.random()*(window.innerWidth-120)+"px";
+    no.style.top  = Math.random()*(window.innerHeight-60)+"px";
+
+    // Change text
+    no.innerText = noTexts[noIndex % noTexts.length];
+    noIndex++;
+
+    // Increase YES size
+    yesScale += 0.12;
+    yes.style.transform = `scale(${yesScale})`;
+}
+
+function yesClicked(){
+    document.getElementById("popup1").classList.add("show");
+
+    const music=document.getElementById("music");
+    music.volume=0.4;
+    music.play();
+
+    rain();
+
+    setTimeout(()=>{
+        document.getElementById("popup2").classList.add("show");
+    },5000);
+}
+
+function showDatePopup(){
+    document.getElementById("popup2").classList.remove("show");
+    document.getElementById("popup3").classList.add("show");
+}
+
+function confirmDate(){
+    const date=document.getElementById("datePick").value;
+    if(!date){ alert("Please select a date 🥺"); return; }
+
+    const email="yourmail@gmail.com"; // 🔴 CHANGE THIS
+    const subject="Vodka Date Confirmation 🥰";
+    const body=`She said YES 🥰%0AOur vodka date is on: ${date}`;
+
+    window.location.href=`mailto:${email}?subject=${subject}&body=${body}`;
+}
+
+function rain(){
+    for(let i=0;i<40;i++){
+        const el=document.createElement("div");
+        el.className="fall";
+        el.innerHTML=Math.random()>0.5?"❤️":"🌹";
+        el.style.left=Math.random()*100+"vw";
+        el.style.fontSize=(15+Math.random()*20)+"px";
+        el.style.animationDuration=(3+Math.random()*3)+"s";
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),6000);
+    }
+}
+</script>
+
+</body>
+</html>
         border: none;
         border-radius: 25px;
         font-size: 16px;
