@@ -2,111 +2,147 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>For You ❤️</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Just One Question 💖</title>
 
 <style>
     body {
         margin: 0;
         height: 100vh;
+        background: linear-gradient(135deg, #ffdde1, #ee9ca7);
         display: flex;
         justify-content: center;
         align-items: center;
-        background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Poppins', sans-serif;
         overflow: hidden;
     }
 
-    .card {
+    .box {
         background: white;
-        padding: 25px;
-        border-radius: 25px;
+        padding: 30px 25px;
+        border-radius: 20px;
         text-align: center;
         box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        max-width: 320px;
-        width: 90%;
+        animation: pop 0.6s ease;
+    }
+
+    @keyframes pop {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
     }
 
     h1 {
         color: #ff4d6d;
-        font-size: 22px;
-    }
-
-    p {
-        font-size: 16px;
         margin-bottom: 20px;
     }
 
     button {
-        padding: 12px 22px;
-        font-size: 16px;
-        border-radius: 30px;
+        padding: 12px 28px;
+        margin: 10px;
         border: none;
+        border-radius: 25px;
+        font-size: 16px;
         cursor: pointer;
-        margin: 8px;
+        transition: all 0.3s ease;
     }
 
-    #yes {
+    .yes {
         background: #ff4d6d;
         color: white;
     }
 
-    #no {
-        background: #ddd;
-        position: absolute;
+    .yes:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(255,77,109,0.6);
     }
 
+    .no {
+        background: #ddd;
+    }
+
+    /* POPUP */
+    .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        z-index: 10;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        transition: all 0.5s ease;
+    }
+
+    .popup.show {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    .popup h2 {
+        color: #ff4d6d;
+        font-size: 26px;
+    }
+
+    /* HEARTS */
     .heart {
         position: fixed;
+        bottom: -20px;
         font-size: 20px;
-        animation: fall 3s linear forwards;
+        animation: floatUp 4s linear forwards;
     }
 
-    @keyframes fall {
-        0% { transform: translateY(-10px); opacity: 1; }
-        100% { transform: translateY(100vh); opacity: 0; }
+    @keyframes floatUp {
+        to {
+            transform: translateY(-110vh);
+            opacity: 0;
+        }
     }
 </style>
 </head>
 
 <body>
 
-<div class="card">
-    <h1>Hey ❤️</h1>
-    <p>
-        Ek question hai…<br><br>
-        <b>Will you be my Valentine? 💖</b>
-    </p>
-
-    <button id="yes" onclick="yesClicked()">Yes 🥰</button>
-    <button id="no" onmouseover="moveNo()">No 😝</button>
+<div class="box">
+    <h1> Dear Payu Will you be my Valentine? 💘</h1>
+    <button class="yes" onclick="yesClicked()">Yes 💕</button>
+    <button class="no">No 🙈</button>
 </div>
+
+<div class="popup" id="popup">
+    <h2>🎉🎉 Thanks for accepting I love you bohot sara...🎊🎊</h2>
+    <p>😍😍🥰🥰You just made my heart the happiest ❤️💖<br>
+    This is going to be soooo special 💫</p>
+</div>
+
+<!-- Romantic Music -->
+<audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/audio/2022/10/25/audio_0c8f2c6e5c.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 function yesClicked() {
-    for (let i = 0; i < 30; i++) {
+    document.getElementById("popup").classList.add("show");
+
+    const music = document.getElementById("bgMusic");
+    music.volume = 0.4;
+    music.play();
+
+    for (let i = 0; i < 35; i++) {
         createHeart();
     }
-    setTimeout(() => {
-        alert("Yayyy! 💕 You just made my day 😍");
-    }, 300);
-}
-
-function moveNo() {
-    const noBtn = document.getElementById("no");
-    const x = Math.random() * (window.innerWidth - 100);
-    const y = Math.random() * (window.innerHeight - 50);
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
 }
 
 function createHeart() {
     const heart = document.createElement("div");
     heart.className = "heart";
     heart.innerHTML = "❤️";
-    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = Math.random() * 20 + 15 + "px";
     document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 3000);
+
+    setTimeout(() => {
+        heart.remove();
+    }, 4000);
 }
 </script>
 
