@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For You ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+        font-family: 'Segoe UI', sans-serif;
+        overflow: hidden;
+    }
+
+    .card {
+        background: white;
+        padding: 25px;
+        border-radius: 25px;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        max-width: 320px;
+        width: 90%;
+    }
+
+    h1 {
+        color: #ff4d6d;
+        font-size: 22px;
+    }
+
+    p {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    button {
+        padding: 12px 22px;
+        font-size: 16px;
+        border-radius: 30px;
+        border: none;
+        cursor: pointer;
+        margin: 8px;
+    }
+
+    #yes {
+        background: #ff4d6d;
+        color: white;
+    }
+
+    #no {
+        background: #ddd;
+        position: absolute;
+    }
+
+    .heart {
+        position: fixed;
+        font-size: 20px;
+        animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(-10px); opacity: 1; }
+        100% { transform: translateY(100vh); opacity: 0; }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Hey ❤️</h1>
+    <p>
+        Ek question hai…<br><br>
+        <b>Will you be my Valentine? 💖</b>
+    </p>
+
+    <button id="yes" onclick="yesClicked()">Yes 🥰</button>
+    <button id="no" onmouseover="moveNo()">No 😝</button>
+</div>
+
+<script>
+function yesClicked() {
+    for (let i = 0; i < 30; i++) {
+        createHeart();
+    }
+    setTimeout(() => {
+        alert("Yayyy! 💕 You just made my day 😍");
+    }, 300);
+}
+
+function moveNo() {
+    const noBtn = document.getElementById("no");
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 50);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 3000);
+}
+</script>
+
+</body>
+</html>
