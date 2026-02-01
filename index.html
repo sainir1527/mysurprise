@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Just One Question 💖</title>
 
 <style>
     body {
         margin: 0;
+        padding: 0;
         height: 100vh;
         background: linear-gradient(135deg, #ffdde1, #ee9ca7);
         display: flex;
@@ -16,50 +18,41 @@
         overflow: hidden;
     }
 
-    .box {
-        background: white;
-        padding: 30px 25px;
-        border-radius: 20px;
+    .container {
         text-align: center;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        animation: pop 0.6s ease;
-    }
-
-    @keyframes pop {
-        from { transform: scale(0.8); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
+        background: rgba(255,255,255,0.9);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        z-index: 2;
     }
 
     h1 {
-        color: #ff4d6d;
+        color: #e91e63;
         margin-bottom: 20px;
     }
 
     button {
-        padding: 12px 28px;
-        margin: 10px;
+        padding: 12px 25px;
         border: none;
         border-radius: 25px;
         font-size: 16px;
         cursor: pointer;
         transition: all 0.3s ease;
+        margin: 10px;
     }
 
-    .yes {
-        background: #ff4d6d;
+    #yesBtn {
+        background: #e91e63;
         color: white;
     }
 
-    .yes:hover {
-        transform: scale(1.1);
-        box-shadow: 0 5px 15px rgba(255,77,109,0.6);
+    #noBtn {
+        background: #ccc;
+        position: absolute;
     }
 
-    .no {
-        background: #ddd;
-    }
-
-    /* POPUP */
+    /* Popup */
     .popup {
         position: fixed;
         top: 50%;
@@ -69,9 +62,9 @@
         padding: 30px;
         border-radius: 20px;
         text-align: center;
-        z-index: 10;
         box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        transition: all 0.5s ease;
+        z-index: 5;
+        transition: transform 0.5s ease;
     }
 
     .popup.show {
@@ -79,21 +72,21 @@
     }
 
     .popup h2 {
-        color: #ff4d6d;
-        font-size: 26px;
+        color: #e91e63;
     }
 
-    /* HEARTS */
-    .heart {
+    /* Hearts & Petals */
+    .heart, .petal {
         position: fixed;
-        bottom: -20px;
+        top: -10px;
         font-size: 20px;
-        animation: floatUp 4s linear forwards;
+        animation: fall linear forwards;
+        pointer-events: none;
     }
 
-    @keyframes floatUp {
+    @keyframes fall {
         to {
-            transform: translateY(-110vh);
+            transform: translateY(110vh) rotate(360deg);
             opacity: 0;
         }
     }
@@ -102,49 +95,68 @@
 
 <body>
 
-<div class="box">
-    <h1> Dear Payu Will you be my Valentine? 💘</h1>
-    <button class="yes" onclick="yesClicked()">Yes 💕</button>
-    <button class="no" onmouseover="moveNo()">No 😜😜</button>
+<div class="container">
+    <h1>Dear Payu will you be my valentine? 💕</h1>
+    <button id="yesBtn" onclick="yesClicked()">Yes 💖</button>
+    <button id="noBtn" onmouseover="moveNo()">No 😅</button>
 </div>
 
+<!-- Popup -->
 <div class="popup" id="popup">
-    <h2>🎉🎊 Thanks for accepting🎊🎉<br>
-    🥰🥰I love you bohot sara...🥰🥰</h2>
-    <p>You just made my heart the happiest ❤️💖<br>
-    This is going to be soooo special 💫</p>
+    <h2>🎉🎊I Love you Bohot Sara...🎊</h2>
+    <p>You just made my heart smile ❤️<br>
+    This is the cutest “YES” ever 🥰</p>
 </div>
 
-<!-- Romantic Music -->
+<!-- Music -->
 <audio id="bgMusic" loop>
     <source src="https://cdn.pixabay.com/audio/2022/10/25/audio_0c8f2c6e5c.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-function yesClicked() {
-    document.getElementById("popup").classList.add("show");
+    const noBtn = document.getElementById("noBtn");
 
-    const music = document.getElementById("bgMusic");
-    music.volume = 0.4;
-    music.play();
-
-    for (let i = 0; i < 35; i++) {
-        createHeart();
+    function moveNo() {
+        const x = Math.random() * (window.innerWidth - 100);
+        const y = Math.random() * (window.innerHeight - 50);
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
     }
-}
 
-function createHeart() {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerHTML = "❤️";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 20 + 15 + "px";
-    document.body.appendChild(heart);
+    function yesClicked() {
+        document.getElementById("popup").classList.add("show");
 
-    setTimeout(() => {
-        heart.remove();
-    }, 4000);
-}
+        const music = document.getElementById("bgMusic");
+        music.volume = 0.4;
+        music.play();
+
+        for (let i = 0; i < 40; i++) {
+            createHeart();
+            createPetal();
+        }
+    }
+
+    function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = (2 + Math.random() * 3) + "s";
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 5000);
+    }
+
+    function createPetal() {
+        const petal = document.createElement("div");
+        petal.classList.add("petal");
+        petal.innerHTML = "🌹";
+        petal.style.left = Math.random() * 100 + "vw";
+        petal.style.animationDuration = (3 + Math.random() * 4) + "s";
+        document.body.appendChild(petal);
+
+        setTimeout(() => petal.remove(), 6000);
+    }
 </script>
 
 </body>
