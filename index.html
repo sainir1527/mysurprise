@@ -6,24 +6,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+*{box-sizing:border-box}
+
 body{
   margin:0;
   height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  background:linear-gradient(135deg,#ffdde1,#ee9ca7);
-  font-family:Arial, sans-serif;
+  background:linear-gradient(135deg,#ffd6e0,#ff9a9e);
+  font-family:'Segoe UI',sans-serif;
   overflow:hidden;
 }
 
 .card{
   background:#fff;
-  padding:30px;
-  border-radius:20px;
+  padding:30px 25px;
+  border-radius:22px;
   text-align:center;
-  box-shadow:0 15px 30px rgba(0,0,0,0.2);
+  box-shadow:0 15px 30px rgba(0,0,0,.2);
+  max-width:320px;
 }
+
+h2{margin-bottom:20px}
 
 button{
   padding:12px 26px;
@@ -31,9 +36,144 @@ button{
   border:none;
   border-radius:25px;
   cursor:pointer;
-  transition:0.3s;
+  transition:.3s ease;
 }
 
+#yesBtn{
+  background:#e91e63;
+  color:#fff;
+}
+
+#noBtn{
+  background:#ddd;
+  position:absolute;
+}
+
+.popup{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(0);
+  background:#fff;
+  padding:25px;
+  border-radius:20px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.3);
+  z-index:5;
+  transition:.4s ease;
+}
+
+.popup.show{
+  transform:translate(-50%,-50%) scale(1);
+}
+
+.popup button{
+  margin-top:15px;
+  background:#e91e63;
+  color:#fff;
+}
+
+.heart,.petal{
+  position:fixed;
+  top:-20px;
+  font-size:22px;
+  animation:fall linear forwards;
+  pointer-events:none;
+}
+
+@keyframes fall{
+  to{
+    transform:translateY(110vh) rotate(360deg);
+    opacity:0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Will you be my Valentine? 💕</h2>
+  <button id="yesBtn">Yes 😍</button>
+  <button id="noBtn">No 🙈</button>
+</div>
+
+<div class="popup" id="popup1">
+  <h3>🎉🎊 Yayyy! 🥰❤️</h3>
+  <p>You made my heart smile 💖</p>
+  <button id="moreBtn">One more thing please… 🥺</button>
+</div>
+
+<div class="popup" id="popup2">
+  <h3>Can we go on vodka date? 🥰🥂</h3>
+  <input type="date" id="datePick">
+  <button onclick="confirmDate()">Confirm Date 💖</button>
+</div>
+
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/10/25/audio_0c8f2c6e5c.mp3">
+</audio>
+
+<script>
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+
+let scale = 1;
+let textIndex = 0;
+
+const noTexts = [
+ "No 🙈","Are you sure 😳","Think again 😏",
+ "Really 🥺","Don’t break my heart 💔",
+ "Last chance 😬","Stop running 😅","Just YES 😍"
+];
+
+noBtn.addEventListener("mouseenter",()=>{
+  noBtn.innerText = noTexts[textIndex++ % noTexts.length];
+
+  const x = Math.random()*(window.innerWidth-120);
+  const y = Math.random()*(window.innerHeight-60);
+  noBtn.style.left = x+"px";
+  noBtn.style.top  = y+"px";
+
+  scale += .12;
+  yesBtn.style.transform = `scale(${scale})`;
+});
+
+yesBtn.onclick=()=>{
+  document.getElementById("music").volume=.4;
+  document.getElementById("music").play();
+  document.getElementById("popup1").classList.add("show");
+  rain();
+};
+
+document.getElementById("moreBtn").onclick=()=>{
+  document.getElementById("popup1").classList.remove("show");
+  document.getElementById("popup2").classList.add("show");
+};
+
+function confirmDate(){
+  const d=document.getElementById("datePick").value;
+  if(!d) return alert("Pick a date first 😄");
+  window.location.href=
+   `mailto:YOURMAIL@gmail.com?subject=Date Confirmed 💖&body=Our date is fixed on ${d} 🥰`;
+}
+
+function rain(){
+  for(let i=0;i<50;i++){
+    const el=document.createElement("div");
+    el.className=Math.random()>.5?"heart":"petal";
+    el.innerHTML=Math.random()>.5?"❤️":"🌹";
+    el.style.left=Math.random()*100+"vw";
+    el.style.fontSize=(16+Math.random()*20)+"px";
+    el.style.animationDuration=(3+Math.random()*3)+"s";
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),6000);
+  }
+}
+</script>
+
+</body>
+</html>
 #yes{
   background:#e91e63;
   color:#fff;
