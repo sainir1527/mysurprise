@@ -19,6 +19,7 @@ body{
   overflow:hidden;
 }
 
+/* Card */
 .card{
   background:#fff;
   padding:30px 25px;
@@ -26,6 +27,7 @@ body{
   text-align:center;
   box-shadow:0 15px 30px rgba(0,0,0,.2);
   max-width:320px;
+  z-index:2;
 }
 
 h2{margin-bottom:20px}
@@ -49,6 +51,7 @@ button{
   position:absolute;
 }
 
+/* Popups */
 .popup{
   position:fixed;
   top:50%;
@@ -59,7 +62,7 @@ button{
   border-radius:20px;
   text-align:center;
   box-shadow:0 20px 40px rgba(0,0,0,.3);
-  z-index:5;
+  z-index:10;
   transition:.4s ease;
 }
 
@@ -67,16 +70,30 @@ button{
   transform:translate(-50%,-50%) scale(1);
 }
 
-.popup button{
-  margin-top:15px;
-  background:#e91e63;
-  color:#fff;
+/* Black screen */
+#blackScreen{
+  position:fixed;
+  inset:0;
+  background:black;
+  opacity:0;
+  transition:.8s ease;
+  z-index:5;
+  pointer-events:none;
+}
+#blackScreen.show{opacity:1}
+
+/* Fireworks */
+#fireworks{
+  position:fixed;
+  inset:0;
+  display:none;
+  z-index:6;
 }
 
-.heart,.petal{
+/* Hearts & roses rain */
+.fall{
   position:fixed;
   top:-20px;
-  font-size:22px;
   animation:fall linear forwards;
   pointer-events:none;
 }
@@ -98,19 +115,23 @@ button{
   <button id="noBtn">No 🙈</button>
 </div>
 
+<!-- Popups -->
 <div class="popup" id="popup1">
   <h3>🎉 Yayyy! 🥰❤️</h3>
   <p>You made my heart smile 💖</p>
-  <button id="moreBtn">One more thing… 🥺</button>
 </div>
 
 <div class="popup" id="popup2">
-  <h3>Can we go on a date? 🥂💖</h3>
-  <input type="date" id="datePick">
-  <button onclick="confirmDate()">Confirm Date 💕</button>
+  <h3>I knew it 😍</h3>
+  <p>This just made my whole day 🌹❤️</p>
 </div>
 
+<!-- Black screen & fireworks -->
+<div id="blackScreen"></div>
+<canvas id="fireworks"></canvas>
+
 <script>
+/* NO button logic */
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 
@@ -124,45 +145,66 @@ const noTexts = [
 ];
 
 function runAway(){
-  // text change
   noBtn.innerText = noTexts[textIndex++ % noTexts.length];
 
-  // instant jump
   const x = Math.random()*(window.innerWidth-120);
   const y = Math.random()*(window.innerHeight-60);
   noBtn.style.left = x+"px";
   noBtn.style.top  = y+"px";
 
-  // YES button grows faster
-  scale += 0.25; // 🔥 increased speed
+  scale += 0.25;
   yesBtn.style.transform = `scale(${scale})`;
 }
 
-// Desktop + Mobile support
 noBtn.addEventListener("mouseover", runAway);
 noBtn.addEventListener("touchstart", runAway);
 noBtn.addEventListener("click", runAway);
 
-yesBtn.onclick=()=>{
-  document.getElementById("popup1").classList.add("show");
-  rain();
-};
+/* Fireworks */
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
 
-document.getElementById("moreBtn").onclick=()=>{
-  document.getElementById("popup1").classList.remove("show");
-  document.getElementById("popup2").classList.add("show");
-};
+let fireworks = [];
+let fireInterval;
 
-function confirmDate(){
-  const d=document.getElementById("datePick").value;
-  if(!d) return alert("Date select karo 😄");
-  alert("Date fixed on "+d+" 💖🥰");
+function rand(min,max){ return Math.random()*(max-min)+min }
+
+function createFirework(){
+  const x = rand(100,canvas.width-100);
+  const y = rand(100,canvas.height/2);
+  for(let i=0;i<50;i++){
+    fireworks.push({
+      x,y,
+      dx:rand(-4,4),
+      dy:rand(-4,4),
+      a:1,
+      c:`hsl(${Math.random()*360},100%,60%)`
+    });
+  }
 }
 
+function animateFireworks(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  fireworks.forEach((p,i)=>{
+    p.x+=p.dx; p.y+=p.dy; p.a-=0.015;
+    ctx.globalAlpha=p.a;
+    ctx.fillStyle=p.c;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,3,0,Math.PI*2);
+    ctx.fill();
+    if(p.a<=0) fireworks.splice(i,1);
+  });
+  ctx.globalAlpha=1;
+  requestAnimationFrame(animateFireworks);
+}
+
+/* Hearts & roses rain */
 function rain(){
   for(let i=0;i<60;i++){
     const el=document.createElement("div");
-    el.className=Math.random()>.5?"heart":"petal";
+    el.className="fall";
     el.innerHTML=Math.random()>.5?"❤️":"🌹";
     el.style.left=Math.random()*100+"vw";
     el.style.fontSize=(16+Math.random()*20)+"px";
@@ -171,6 +213,39 @@ function rain(){
     setTimeout(()=>el.remove(),6000);
   }
 }
+
+/* YES button cinematic flow */
+yesBtn.onclick = () => {
+  const black = document.getElementById("blackScreen");
+
+  // 1️⃣ Black screen
+  black.classList.add("show");
+
+  // 2️⃣ Fireworks start
+  setTimeout(()=>{
+    canvas.style.display="block";
+    fireInterval=setInterval(createFirework,400);
+    animateFireworks();
+  },500);
+
+  // 3️⃣ Stop fireworks & remove black
+  setTimeout(()=>{
+    clearInterval(fireInterval);
+    canvas.style.display="none";
+    black.classList.remove("show");
+  },3000);
+
+  // 4️⃣ First popup + rain
+  setTimeout(()=>{
+    document.getElementById("popup1").classList.add("show");
+    rain();
+  },3500);
+
+  // 5️⃣ Second popup after 8–9 sec
+  setTimeout(()=>{
+    document.getElementById("popup2").classList.add("show");
+  },12000);
+};
 </script>
 
 </body>
