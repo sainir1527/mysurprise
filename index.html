@@ -19,7 +19,6 @@ body{
   overflow:hidden;
 }
 
-/* Card */
 .card{
   background:#fff;
   padding:30px 25px;
@@ -51,7 +50,6 @@ button{
   position:absolute;
 }
 
-/* Popups */
 .popup{
   position:fixed;
   top:50%;
@@ -70,7 +68,6 @@ button{
   transform:translate(-50%,-50%) scale(1);
 }
 
-/* Black screen */
 #blackScreen{
   position:fixed;
   inset:0;
@@ -82,7 +79,6 @@ button{
 }
 #blackScreen.show{opacity:1}
 
-/* Fireworks */
 #fireworks{
   position:fixed;
   inset:0;
@@ -90,7 +86,6 @@ button{
   z-index:6;
 }
 
-/* Hearts & roses rain */
 .fall{
   position:fixed;
   top:-20px;
@@ -115,13 +110,11 @@ button{
   <button id="noBtn">No 🙈</button>
 </div>
 
-<!-- FIRST POPUP -->
 <div class="popup" id="popup1">
   <h3>🎉 Yayyy! 🥰❤️</h3>
   <p>You made my heart smile 💖</p>
 </div>
 
-<!-- SECOND POPUP -->
 <div class="popup" id="popup2">
   <h3>I knew it 😍</h3>
   <p>This just made my whole day 🌹❤️</p>
@@ -133,12 +126,10 @@ button{
   </div>
 </div>
 
-<!-- Effects -->
 <div id="blackScreen"></div>
 <canvas id="fireworks"></canvas>
 
 <script>
-/* NO button logic */
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 
@@ -146,26 +137,22 @@ let scale = 1;
 let textIndex = 0;
 
 const noTexts = [
- "Nop 🙈","Are you sure 😳","Think again 😏",
+ "No 🙈","Are you sure 😳","Think again 😏",
  "Really 🥺","Dil tod diya 💔",
  "Last chance 😬","Stoppp 😅","Just YES 😍"
 ];
 
 function runAway(){
   noBtn.innerText = noTexts[textIndex++ % noTexts.length];
-
-  const x = Math.random()*(window.innerWidth-120);
-  const y = Math.random()*(window.innerHeight-60);
-  noBtn.style.left = x+"px";
-  noBtn.style.top  = y+"px";
-
+  noBtn.style.left = Math.random()*(innerWidth-120)+"px";
+  noBtn.style.top  = Math.random()*(innerHeight-60)+"px";
   scale += 0.25;
   yesBtn.style.transform = `scale(${scale})`;
 }
 
 noBtn.addEventListener("mouseover", runAway);
-noBtn.addEventListener("touchstart", runAway);
 noBtn.addEventListener("click", runAway);
+noBtn.addEventListener("touchstart", runAway);
 
 /* Fireworks */
 const canvas = document.getElementById("fireworks");
@@ -173,106 +160,88 @@ const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-let fireworks = [];
-let fireInterval;
+let particles=[], interval;
 
-function rand(min,max){ return Math.random()*(max-min)+min }
-
-function createFirework(){
-  const x = rand(100,canvas.width-100);
-  const y = rand(100,canvas.height/2);
-  for(let i=0;i<50;i++){
-    fireworks.push({
+function fire(){
+  const x=Math.random()*canvas.width;
+  const y=Math.random()*canvas.height/2;
+  for(let i=0;i<40;i++){
+    particles.push({
       x,y,
-      dx:rand(-4,4),
-      dy:rand(-4,4),
+      dx:(Math.random()-0.5)*6,
+      dy:(Math.random()-0.5)*6,
       a:1,
       c:`hsl(${Math.random()*360},100%,60%)`
     });
   }
 }
 
-function animateFireworks(){
+function animate(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  fireworks.forEach((p,i)=>{
-    p.x+=p.dx; p.y+=p.dy; p.a-=0.015;
+  particles.forEach((p,i)=>{
+    p.x+=p.dx; p.y+=p.dy; p.a-=0.02;
     ctx.globalAlpha=p.a;
     ctx.fillStyle=p.c;
     ctx.beginPath();
     ctx.arc(p.x,p.y,3,0,Math.PI*2);
     ctx.fill();
-    if(p.a<=0) fireworks.splice(i,1);
+    if(p.a<=0) particles.splice(i,1);
   });
   ctx.globalAlpha=1;
-  requestAnimationFrame(animateFireworks);
+  requestAnimationFrame(animate);
 }
 
-/* Hearts & roses rain */
+/* Rain */
 function rain(){
   for(let i=0;i<60;i++){
-    const el=document.createElement("div");
-    el.className="fall";
-    el.innerHTML=Math.random()>.5?"❤️":"🌹";
-    el.style.left=Math.random()*100+"vw";
-    el.style.fontSize=(16+Math.random()*20)+"px";
-    el.style.animationDuration=(3+Math.random()*3)+"s";
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(),6000);
+    const e=document.createElement("div");
+    e.className="fall";
+    e.innerHTML=Math.random()>.5?"❤️":"🌹";
+    e.style.left=Math.random()*100+"vw";
+    e.style.fontSize=(18+Math.random()*20)+"px";
+    e.style.animationDuration=(3+Math.random()*3)+"s";
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),6000);
   }
 }
 
-/* YES button cinematic flow */
-yesBtn.onclick = () => {
-  const black = document.getElementById("blackScreen");
-
-  // Black screen
+yesBtn.onclick=()=>{
+  const black=document.getElementById("blackScreen");
   black.classList.add("show");
 
-  // Fireworks
   setTimeout(()=>{
     canvas.style.display="block";
-    fireInterval=setInterval(createFirework,400);
-    animateFireworks();
+    interval=setInterval(fire,400);
+    animate();
   },500);
 
-  // Stop fireworks
   setTimeout(()=>{
-    clearInterval(fireInterval);
+    clearInterval(interval);
     canvas.style.display="none";
     black.classList.remove("show");
   },3000);
 
-  // First popup + rain
   setTimeout(()=>{
-    document.getElementById("popup1").classList.add("show");
+    popup1.classList.add("show");
     rain();
   },3500);
 
-  // Second popup after 8–9 sec
+  /* 🔥 UPDATED TIMING HERE */
   setTimeout(()=>{
-    const p2 = document.getElementById("popup2");
-    p2.classList.add("show");
-
-    // Show date option after 2–3 sec
+    popup2.classList.add("show");
     setTimeout(()=>{
-      document.getElementById("dateSection").style.display="block";
-    },2500);
-
-  },12000);
+      dateSection.style.display="block";
+    },2000);
+  },8500);  // 👈 earlier than before
 };
 
-/* WhatsApp confirmation */
 function confirmDate(){
-  const date = document.getElementById("datePick").value;
-  if(!date){
-    alert("Please select a date 😊");
-    return;
-  }
-
-  const phone = "8802329692";
-  const msg = `Date confirmed 🥰❤️%0AOur date is on: ${date} 🌹`;
-
-  window.open(`https://wa.me/91${phone}?text=${msg}`,"_blank");
+  const d=document.getElementById("datePick").value;
+  if(!d){alert("Please select a date 😊");return;}
+  window.open(
+    `https://wa.me/918802329692?text=Date%20confirmed%20🥰❤️%0AOur%20date%20is:%20${d}`,
+    "_blank"
+  );
 }
 </script>
 
