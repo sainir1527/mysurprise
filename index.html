@@ -132,6 +132,9 @@ button{
 <script>
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
+const popup1 = document.getElementById("popup1");
+const popup2 = document.getElementById("popup2");
+const dateSection = document.getElementById("dateSection");
 
 let scale = 1;
 let textIndex = 0;
@@ -146,7 +149,7 @@ function runAway(){
   noBtn.innerText = noTexts[textIndex++ % noTexts.length];
   noBtn.style.left = Math.random()*(innerWidth-120)+"px";
   noBtn.style.top  = Math.random()*(innerHeight-60)+"px";
-  scale += 0.25;
+  scale += 0.3; // ⬅ bigger YES growth
   yesBtn.style.transform = `scale(${scale})`;
 }
 
@@ -211,28 +214,28 @@ yesBtn.onclick=()=>{
 
   setTimeout(()=>{
     canvas.style.display="block";
-    interval=setInterval(fire,400);
+    interval=setInterval(fire,350);
     animate();
-  },500);
+  },400);
 
   setTimeout(()=>{
     clearInterval(interval);
     canvas.style.display="none";
     black.classList.remove("show");
-  },3000);
+  },2800);
 
   setTimeout(()=>{
     popup1.classList.add("show");
     rain();
-  },3500);
+  },3200);
 
-  /* 🔥 UPDATED TIMING HERE */
+  /* 🔥 SECOND POPUP – EARLIER */
   setTimeout(()=>{
     popup2.classList.add("show");
     setTimeout(()=>{
       dateSection.style.display="block";
     },2000);
-  },8500);  // 👈 earlier than before
+  },7000); // ⬅ EARLIER TIMING
 };
 
 function confirmDate(){
